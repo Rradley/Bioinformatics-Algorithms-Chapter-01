@@ -7,34 +7,53 @@ Created on Sun Sep  4 20:11:52 2022
 """
 file = "../datasets/dataset_746264_6.txt"
 
+def composition(text, k):
+  kmers = []
+  for i in range(len(text)-k+1):
+    kmers.append(text[i:i+k])
+  return kmers
+
+def getSuffix(string):
+    print('suffix',string[1:len(string)])
+    return string[1:len(string)]
+
+def getPrefix(string):
+    print('prefix',string[0:len(string)-1])
+    return string[0:len(string)-1]
+
+def debruijn(genome, k):
+  result = {}
+  kmers = composition(genome, k)
+  for kmer in kmers:
+    if getPrefix(kmer) not in result:
+      result[getPrefix(kmer)] = getSuffix(kmer)
+    else:
+      result[getPrefix(kmer)] += ' ' + getSuffix(kmer)
+  return result
+
+
 def read_file(file_name):
     with open(file_name, "r") as file:
         k = int(file.readline().strip())
         string = file.readline().strip()
-        string = string[:-1]
         file.close()
     return k,string
 
-def debruijn(k, text):
-    result = {}
-    for i in range(len(text)-k+1):
-        if text[i:i+k-1] not in result.keys():
-            result[text[i:i+k-1]] = text[i+1:i+k]
-        else:
-            result[text[i:i+k-1]] += ' ' + text[i+1:i+k]
-    return result
-
-k, text = read_file(file)
-
+k, genome = read_file(file)
 k=4
-text='AAGATTCTCTAAGA'
-#k=12
-#text='CTGAAGACCTCTCCACATTACTACGATATAAATCATTTCAGCCTCTAGATACGCCTTGGTGGGTGGGGTTGGCAATTTACGATATGTCCGAATGATTTGACACCAAATACCTTAGCTAGCCCCAAGGAAAATTCTGGGCTTTACGTTGGCCGAGCCACATTACTACAGTAAGGTTAAGCAACCAGCCAGTCGCTCATAAGGACTCCACGCCTCCCGTTACTGACTTCCAACAACAATGTGACAGTAGACTGGAACCTGGGAGGACATTATTGATTCGCCGCGAATCTTCTAAGGTATTTTACCCCCACTGGTCACCTTAACCATTAAGACCTCGAAGTGACACCTAGCCTCTTAACACCCAACTCCACCGACAATACCTATTCGCTGACAAGCGGGACATCCGATCGCCCCTGACTCGAGGTGTCTACCGTCCATCGATTGCTAAACTTTGTTAGGAGTCTAAGCGAACCATGGGAAGGGGGCGGCAGTCAACGTGCTCCTTTAGTGAGGTACCATATTCTTACAGCATGTGGAGCGCAGCAAACTAGCGACCGGGAGTACTCCCACAACCCTGGGTACGTACTGCACTTTTTTCAAGAGCCAGGGTCATTTAAATAGCATCTTTGCTCTTTCTGATAAGGGGGCGACCATCTCCGAATTGAGCCAAACGCTGGTATAAGACTCGTCTCATGACTCCCTAGCCATTTGTATGTTGTCATTTCTGATTTTAGCAGGTAAAACGTAAGGCCTGCTAAAGAATCACGCGGGGAGGCCTTAAATTTCGTCATGGAGCAATCGTCCTAGATTGCTGTGAAGGTTCGTACCAGTAGAGTCTAATGTGCGTAAATGTTAACTGGCCGTATATTCTCTGGTGAGCTGAAACAGAAAGCTGGCAGAAAGCCACTCTTGCTGTTTCGTGTGTACGGACATCGGGATAGTACCAAAAAGCATGTTCTTCATCTGGCGATGCTTGATGTCTACCGTAGACACCTTCATACGT'
+genome='ALPHABET'
+result = debruijn(genome, k)
 
-output = debruijn(k, text)
+for key, value in sorted(result.items()):
+  print(key + ": " + value)
 
-f = open("answer.txt", "w")
-for key in sorted(output.keys()):
-    print(key + ' : ' + output[key])
-    f.write(key + ': ' + output[key]+'\n')
-f.close()
+
+
+#f = open("answer.txt", "w")
+#for key in sorted(output.keys()):
+#    print(key + ': ' + output[key])
+#    f.write(key + ': ' + output[key]+'\n')
+#f.close()
+
+
+

@@ -7,30 +7,32 @@ Created on Sun Sep  4 20:36:33 2022
 """
 file = "../datasets/dataset_746265_8.txt"
 
+def getSuffix(text):
+    return text[1:len(text)]
+
+def getPrefix(text):
+    return text[0:len(text)-1]
+
+def debruijn(kmers):
+  result = {}
+  for kmer in kmers:
+    if getPrefix(kmer) not in result:
+      result[getPrefix(kmer)] = getSuffix(kmer)
+    else:
+      result[getPrefix(kmer)] += ' ' + getSuffix(kmer)
+  return result
+
+
 def read_file(file_name):
     with open(file_name, "r") as file:
-        string = [line.strip() for line in file.readlines()]
+        text = file.readline().split()
         file.close()
-    return string
+    return text
 
-def debruijn(patterns):
-    result = {}
-    for i in patterns:
-        if i[:-1] not in result.keys():
-            result[i[:-1]] = i[1:]
-        else:
-            result[i[:-1]] += ','+ i[1:]
-        #print(result[i])
-    return result
+kmers = read_file(file)
+result = debruijn(kmers)
+print(result)
 
-text = read_file(file)
-#text= 'GAGG CAGG GGGG GGGA CAGG AGGG GGAG'
-output = debruijn(text)
-
-
-f = open("answer.txt", "w")
-for key in sorted(output.keys()):
-    print(key + ': ' + output[key])
-    f.write(key + ': ' + output[key]+'\n')
-f.close()
+for key in sorted(result.keys()):
+    print(key + ': ' + result[key])
     
